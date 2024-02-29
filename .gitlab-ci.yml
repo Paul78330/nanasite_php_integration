@@ -1,0 +1,16 @@
+stages:
+  - test
+  - deploy
+
+test:
+  stage: test
+  image: php:7.4
+  script:
+    - php -l /var/www/html/index.php
+
+deploy:
+  stage: deploy
+  script:
+    - echo "Déploiement de l'application..."
+  only:
+    - master
