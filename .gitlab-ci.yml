@@ -25,4 +25,4 @@ test:
   script:
     - docker pull $CONTAINER_IMAGE
     - docker run -d --name test_container $CONTAINER_IMAGE
-    - docker exec test_container php -l /var/www/html/index.php
+    - docker exec test_container php -l /var/www/html/Global/index.php
