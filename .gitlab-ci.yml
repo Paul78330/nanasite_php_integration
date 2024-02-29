@@ -1,28 +1,36 @@
+# Utilise la dernière version de l'image Docker
 image: docker:latest
 
+# Utilise le service Docker-in-Docker pour pouvoir construire et pousser des images Docker
 services:
   - docker:dind
 
+# Définit les étapes de la pipeline CI
 stages:
-  - build
-  - test
+  - build  # Construit l'image Docker
+  - test   # Teste l'image Docker
 
+# Définit les variables d'environnement utilisées dans la pipeline
 variables:
-  DOCKER_DRIVER: overlay2
-  CONTAINER_IMAGE: registry.gitlab.com/greta_formation/php_website_nanasite
+  DOCKER_DRIVER: overlay2  # Utilise le driver overlay2 pour Docker
+  CONTAINER_IMAGE: registry.gitlab.com/greta_formation/php_website_nanasite  # Nom de l'image Docker à construire et tester
 
+# Script exécuté avant chaque étape de la pipeline
 before_script:
+  # Se connecte au registre Docker avec les identifiants fournis
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
 
+# Étape de construction de l'image Docker
 build:
-  stage: build
+  stage: build  # Indique que cette tâche fait partie de l'étape "build"
   script:
-    - docker build -t $CONTAINER_IMAGE .
-    - docker push $CONTAINER_IMAGE
+    - docker build -t $CONTAINER_IMAGE .  # Construit l'image Docker
+    - docker push $CONTAINER_IMAGE  # Pousse l'image Docker au registre
 
+# Étape de test de l'image Docker
 test:
-  stage: test
+  stage: test  # Indique que cette tâche fait partie de l'étape "test"
   script:
-    - docker pull $CONTAINER_IMAGE
-    - docker run -d --name test_container $CONTAINER_IMAGE
-    - docker exec test_container php -l /var/www/html/pages/Global/index.php
+    - docker pull $CONTAINER_IMAGE  # Récupère l'image Docker du registre
+    - docker run -d --name test_container $CONTAINER_IMAGE  # Exécute l'image Docker en arrière-plan
+    - docker exec test_container php -l /var/www/html/pages/Global/index.php  # Exécute une commande PHP dans le conteneur Docker pour tester l'image
